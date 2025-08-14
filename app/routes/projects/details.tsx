@@ -4,7 +4,7 @@ import type { Route } from './+types/details';
 import { FaArrowLeft } from 'react-icons/fa';
 
 export async function clientLoader({ request, params }: Route.ClientLoaderArgs): Promise<Project> {
-	const res = await fetch(`http://localhost:8000/projects/${params.id}`);
+	const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/projects/${params.id}`);
 	if (!res.ok) throw new Response('Project not found', { status: 404 });
 	const project: Project = await res.json();
 
@@ -17,6 +17,7 @@ export function HydrateFallback() {
 
 const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
 	const project = loaderData as Project | undefined;
+
 	return (
 		<>
 			<Link to='/projects' className='flex items-center text-blue-400 hover:text-blue-500 mb-6 transition'>
