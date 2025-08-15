@@ -20,7 +20,7 @@ const HomePage = ({ loaderData }: Route.ComponentProps) => {
 
 	return (
 		<>
-			<FeaturedProjects projects={projects} count={1}/>
+			<FeaturedProjects projects={projects} count={2}/>
 			<AboutPreview />
 		</>
 	);
