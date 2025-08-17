@@ -1,21 +1,35 @@
 import ProjectCard from '~/components/ProjectCard';
-import type { Project } from '../types/project';
+import type { Project, ProjectStrapi, ResJsonStrapi } from '../types/project';
 import type { Route } from './+types';
 import { useState } from 'react';
 import Pagination from '~/components/Pagination';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export async function loader({ params }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
-	const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/projects`);
-	const data = await res.json();
-	return { projects: data };
+	const res = await fetch(`${import.meta.env.VITE_API_STRAPI_BASE}/api/projects?populate=*`);
+	const jsone: ResJsonStrapi<ProjectStrapi> = await res.json();
+
+	const projects = jsone.data.map((item) => ({
+		id: item.id,
+		documentId: item.documentId,
+		title: item.title,
+		description: item.description,
+		url: item.url,
+		date: item.date,
+		category: item.category,
+		featured: item.featured,
+		image: item.image?.formats.medium?.url
+			? item.image.formats.medium.url
+			: 'images/no-image.png',
+	}));
+	return { projects };
 }
 
 const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
 	const [curPage, setCurPage] = useState(1);
 	const [selectedCategory, setSelectedCategory] = useState('All');
 
-	const { projects } = loaderData as { projects: Project[] };
+	const { projects } = loaderData;
 
 	const categories = ['All', ...new Set(projects.map((project) => project.category))];
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import type { PostMeta } from '~/routes/types/post';
+import type { PostType } from '~/routes/types/post';
 
 const PostsLatest = ({ posts, limit = 2 }: PostsLatestProps) => {
 	const latests = [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, limit);
@@ -16,7 +16,7 @@ const PostsLatest = ({ posts, limit = 2 }: PostsLatestProps) => {
 						className='block p-4 border border-gray-700 rounded-lg bg-gray-800 hover:shadow-md transition'
 					>
 						<h3 className='text-lg text-semibold text-blue-400 mb-1'>{post.title}</h3>
-						<p className='text-s text-gray-300'>{post.excerpt}</p>
+						<p className='text-s text-gray-300'>{post.excert}</p>
 						<span className='block mt-2 text-xs text-gray-400'>{new Date(post.date).toDateString()}</span>
 					</Link>
 				))}
@@ -27,6 +27,6 @@ const PostsLatest = ({ posts, limit = 2 }: PostsLatestProps) => {
 export default PostsLatest;
 
 interface PostsLatestProps {
-	posts: PostMeta[];
+	posts: PostType[];
 	limit?: number;
 }

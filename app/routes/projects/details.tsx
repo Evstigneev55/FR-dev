@@ -1,22 +1,34 @@
 import { Link } from 'react-router';
-import type { Project } from '../types/project';
+import type { Project, ProjectStrapi, ResJsonStrapi } from '../types/project';
 import type { Route } from './+types/details';
 import { FaArrowLeft } from 'react-icons/fa';
 
-export async function clientLoader({ request, params }: Route.ClientLoaderArgs): Promise<Project> {
-	const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/projects/${params.id}`);
+export async function loader({ request, params }: Route.LoaderArgs): Promise<{ project: Project }> {
+	const res = await fetch(
+		`${import.meta.env.VITE_API_STRAPI_BASE}/api/projects?filters[documentId][$eq]=${params.documentId}&populate=*`
+	);
 	if (!res.ok) throw new Response('Project not found', { status: 404 });
-	const project: Project = await res.json();
+	const jsone: ResJsonStrapi<ProjectStrapi> = await res.json();
 
-	return project;
-}
-
-export function HydrateFallback() {
-	return <div>Loading...</div>;
+	const item = jsone.data[0];
+	const project: Project = {
+		id: item.id,
+		documentId: item.documentId,
+		title: item.title,
+		description: item.description,
+		url: item.url,
+		date: item.date,
+		category: item.category,
+		featured: item.featured,
+		image: item.image?.formats.medium?.url
+			? item.image.formats.medium.url
+			: 'images/no-image.png',
+	};
+	return { project };
 }
 
 const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
-	const project = loaderData as Project | undefined;
+	const {project} = loaderData;
 
 	return (
 		<>
